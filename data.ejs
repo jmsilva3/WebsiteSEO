@@ -1,0 +1,194 @@
+<%-partial('headers/header_data') %>
+<div class="dashboard">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h3>Data and Analytics</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h4>Lessons: <%= numLessons %></h4>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+      <canvas id="myChart" style="width:100%; height:350px;"></canvas>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h4>Tutors: <%= tutors.length %></h4>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+      <canvas id="tutorChart" style="width:100%; height:350px;"></canvas>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h4>Students: <%= students.length %></h4>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+      <canvas id="studentChart" style="width:100%; height:350px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var tctx = document.getElementById("tutorChart").getContext("2d");
+  var sctx = document.getElementById("studentChart").getContext("2d");
+
+  function getLessonStats() {
+    $.ajax({
+      url: '/data/lesson/trend',
+      method: 'get',
+      data: {
+
+      }
+    }).done(function(response) {
+      console.log(response);
+      var data = response.data;
+      var months = [];
+      var stats = [];
+      for(key in data) {
+        months.push(key);
+        stats.push(data[key]);
+      }
+      var options = {
+        scaleShowGridLines : true,
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+        scaleGridLineWidth : 1,
+        scaleShowHorizontalLines: true,
+        scaleShowVerticalLines: true,
+        bezierCurve : true,
+        bezierCurveTension : 0.4,
+        pointDot : true,
+        pointDotRadius : 4,
+        pointDotStrokeWidth : 1,
+        pointHitDetectionRadius : 20,
+        datasetStroke : true,
+        datasetStrokeWidth : 2,
+        datasetFill : true,
+      };
+      var data = {
+        labels: months,
+        datasets: [
+          {
+            label: "My First dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: stats
+          }
+        ]
+      };
+      var myLineChart = new Chart(ctx).Line(data, options);
+    });
+  }
+  function getTutorStats() {
+    $.ajax({
+      url: '/data/tutor/trend',
+      method: 'get',
+      data: {
+
+      }
+    }).done(function(response) {
+      console.log(response);
+      var data = response.data;
+      var months = [];
+      var stats = [];
+      for(key in data) {
+        months.push(key);
+        stats.push(data[key]);
+      }
+      var options = {
+        scaleShowGridLines : true,
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+        scaleGridLineWidth : 1,
+        scaleShowHorizontalLines: true,
+        scaleShowVerticalLines: true,
+        bezierCurve : true,
+        bezierCurveTension : 0.4,
+        pointDot : true,
+        pointDotRadius : 4,
+        pointDotStrokeWidth : 1,
+        pointHitDetectionRadius : 20,
+        datasetStroke : true,
+        datasetStrokeWidth : 2,
+        datasetFill : true,
+      };
+      var data = {
+        labels: months,
+        datasets: [
+          {
+            label: "My First dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: stats
+          }
+        ]
+      };
+      var myLineChart = new Chart(tctx).Line(data, options);
+    });
+  }
+  function getStudentStats() {
+    $.ajax({
+      url: '/data/student/trend',
+      method: 'get',
+      data: {
+
+      }
+    }).done(function(response) {
+      console.log(response);
+      var data = response.data;
+      var months = [];
+      var stats = [];
+      for(key in data) {
+        months.push(key);
+        stats.push(data[key]);
+      }
+      var options = {
+        scaleShowGridLines : true,
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+        scaleGridLineWidth : 1,
+        scaleShowHorizontalLines: true,
+        scaleShowVerticalLines: true,
+        bezierCurve : true,
+        bezierCurveTension : 0.4,
+        pointDot : true,
+        pointDotRadius : 4,
+        pointDotStrokeWidth : 1,
+        pointHitDetectionRadius : 20,
+        datasetStroke : true,
+        datasetStrokeWidth : 2,
+        datasetFill : true,
+      };
+      var data = {
+        labels: months,
+        datasets: [
+          {
+            label: "My First dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: stats
+          }
+        ]
+      };
+      var myLineChart = new Chart(sctx).Line(data, options);
+    });
+  }
+  $(document).ready(function() {
+    getLessonStats();
+    getTutorStats();
+    getStudentStats();
+  });
+</script>

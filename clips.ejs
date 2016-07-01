@@ -1,0 +1,85 @@
+<% if(req.session.User!='' && req.session.User!=null){ %>
+  <% if(req.session.student == true) { %>
+  <%- partial('headers/student_header_lg') %>
+  <% } else { %>
+  <%- partial('headers/header_lg') %>
+  <% } %>
+<% } else { %>
+  <%- partial('headers/header') %>
+<% } %>
+
+<div class="wrapper my-lesson">
+  <div class="row" style="margin-bottom:40px;">
+    <div class="col-sm-12">
+      <h3>Clips</h3>
+    </div>
+  </div>
+  <div id="clipsList">
+  </div>
+</div>
+
+<div style="display:none;">
+  <div class="col-md-6" id="clipTemplate">
+    <div class="row bottom30">
+      <div class="col-md-3">
+        <img alt="a silhouette of the user" src="/images/profile-img.png" style="width:100%;" class="img img-rounded"/>
+      </div>
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-12">
+            <h3><a href="" style="text-decoration:none;" id="name"></a></h3>
+          </div>
+          <div class="col-md-2">
+            <div id="profileImage" style="width:50px; height:50px; background-size: cover; background-position: center;" class="img-circle"></div>
+          </div>
+          <div class="col-md-10">
+            <h4 id="tutor"></h4>
+            <div id="tags"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $.ajax({
+    url: 'lesson/getMicroLessons',
+    method: 'get',
+  }).done(function(data) {
+    var lessons = data.lessons;
+    var clipHTML = "<div class='row bottom30'>";
+
+    for(var i = 0; i < lessons.length; i++) {
+      var tutor = lessons[i].tutor;
+      var lesson = lessons[i];
+      var tags = lessons[i].tags;
+
+      var clipCont = $('#clipTemplate').clone();
+      if(tutor.profilePic == "" || !tutor.profilePic || typeof tutor.profilePic == 'undefined') {
+        clipCont.children().find('#profileImage').css("background-image", "url('/images/profile.png')");
+      } else {
+        clipCont.children().find('#profileImage').css("background-image", "url('https://s3.amazonaws.com/com.profilepics.tutorcast/"+tutor.profilePic +"')");
+      }
+      clipCont.children().find("#name").html(lesson.name);
+      clipCont.children().find("#tutor").html(lesson.tutor.firstName + " " + lesson.tutor.lastName.substr(0,1) + ".");
+      clipCont.children().find("#name").attr("href", "/classroom/replay/"+lesson.id+"/tutor="+lesson.tutor.id);
+
+      var tagshtml = "";
+      for(var j = 0; j < tags.length; j++) {
+        tagshtml += (j < tags.length - 1) ? tags[j].tags.toUpperCase() + ", " : tags[j].tags.toUpperCase();
+      }
+
+      clipCont.children().find("#tags").html(tagshtml);
+
+      if(i % 2 == 0 && i != 0) {
+        clipHTML += "</div><div class='row bottom30'><div class='col-md-6'>" + clipCont.html() + "</div>";
+      } else {
+        clipHTML += "<div class='col-md-6'>" + clipCont.html() + "</div>";
+      }
+    }
+    $('#clipsList').append(clipHTML);
+  });
+});
+</script>

@@ -1,0 +1,160 @@
+<% if(req.session.User!='' && req.session.User!=null){ %>
+  <% if(req.session.student == true) { %>
+    <%- partial('headers/student_header_lg') %>
+    <div class="dashboard">
+    <% var _class="col-md-10 col-md-offset-1"; %>
+  <% } else { %>
+    <%- partial('headers/header_lg') %>
+    <div class="dashboard">
+    <% var _class="col-md-10 col-md-offset-1"; %>
+  <% } %>
+<% } else { %>
+  <%- partial('headers/header') %>
+  <div class="wrapper">
+  <% var _class="col-md-12"; %>
+<% } %>
+  <div class="row" style="margin-bottom:40px;">
+    <div class="<%=_class%> bottom30">
+      <h3>Tutors</h3>
+    </div>
+    <div class="<%=_class%>">
+      <form class="form-inline">
+        <div class="form-group" style="width:100%;">
+          <input type="text" class="form-control" id="tutorSearchCtrl" placeholder="Search by Subject or Tutor" style="width:90%;">
+          <button type="submit" class="btn btn-default pull-right" id="searchBtn">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row" style="margin-bottom:40px;">
+    <div class="<%=_class%> bottom30">
+      <div id="tutorList">
+        <div class="row bottom30">
+      <%
+      var i = 0;
+      _.each(tutors, function(data) {
+        if(i%2 == 0 && i != 0) {
+      %>
+        </div><div class="row bottom30">
+      <% } %>
+        <div class="col-md-6 col-sm-12">
+          <div class="row">
+            <div class="col-md-3">
+              <div style="background: url('<%= (data.profilePic!=null)?'https://s3.amazonaws.com/com.profilepics.tutorcast/' + data.profilePic : '/images/profile.png' %>') no-repeat;
+                width:100px; height:100px; background-size: cover; background-position: center;" class="img-circle"></div>
+            </div>
+            <div class="col-md-9">
+              <%
+                var numDollars = Math.ceil(data.rate/20);
+                var dollars = '$';
+                for(var j = 1; j < numDollars; j++) {
+                  dollars += '$';
+                }
+              %>
+              <h3><a href="/tutor/profile/<%=data.id %>" style="text-decoration:none;"><%= data.firstName.substr(0,1).toUpperCase() + data.firstName.substr(1) + " " +  data.lastName.substr(0,1).toUpperCase() + "." %></a></h3>
+              <h5><span class="dollar"><%=dollars%></span></h5>
+              <%
+              _.each(data.tutordegrees, function(deg) {
+              %>
+                <h4><%= (deg.university) ? deg.university + " " + deg.major : "None" %></h4>
+              <%
+              });
+              if(data.tutordegrees.length == 0) {
+              %>
+                <h4>None</h4>
+              <%
+              }
+              %>
+              Subjects:
+              <%
+              var subjectString = "";
+              _.each(data.subs, function(sub) {
+                 subjectString += sub + ", ";
+              });
+              %>
+              <%= subjectString.substr(0, subjectString.length-2) %>
+            </div>
+          </div>
+        </div>
+        <%
+          i++;
+          });
+        %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:none;">
+  <div class="col-md-6" id="tutorTemplate">
+    <div class="row">
+      <div class="col-md-3">
+        <div id="profileImage" style="width:100px; height:100px; background-size: cover; background-position: center;" class="img-circle"></div>
+      </div>
+      <div class="col-md-9">
+        <h3><a href="" style="text-decoration:none;" id="name"></a></h3>
+        <div id="degrees"></div>
+        Subjects: <span id="subjects"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#searchBtn').click(function() {
+    $.ajax({
+      url: '/tutor/search',
+      data: {
+        search: $('#tutorSearchCtrl').val()
+      },
+      method: 'post'
+    }).done(function(response) {
+      var data = response.data;
+      var tutorHTML = "";
+      $('#tutorList').html(tutorHTML);
+      tutorHTML += "<div class='row bottom30'>";
+
+      for(var i = 0; i < data.length; i++) {
+        var subs = data[i]['subs'];
+        var tutor = data[i]['tutor'];
+        var tutorCont = $('#tutorTemplate').clone();
+        var degrees = "";
+        var subjects = "";
+
+        if(tutor.profilePic == "" || !tutor.profilePic || typeof tutor.profilePic == 'undefined') {
+          tutorCont.children().find('#profileImage').css("background-image", "url('/images/profile.png')");
+        } else {
+          tutorCont.children().find('#profileImage').css("background-image", "url('https://s3.amazonaws.com/com.profilepics.tutorcast/"+tutor.profilePic +"')");
+        }
+        tutorCont.children().find('#name').html(tutor.firstName.substr(0,1).toUpperCase() + tutor.firstName.substr(1) + " " + tutor.lastName.substr(0,1).toUpperCase() + ".");
+        tutorCont.children().find('#name').attr("href", "/tutor/profile/"+tutor.id);
+
+        if(tutor.tutordegrees) {
+          for(var j = 0; j < tutor.tutordegrees.length; j++) {
+            degrees += "<h4>"+tutor.tutordegrees[j].university + " " + tutor.tutordegrees[j].major+"</h4>";
+          }
+        } else {
+          degrees += "<h4>None</h4>";
+        }
+
+        tutorCont.children().find('#degrees').html(degrees);
+        if(subs) {
+          for(var j = 0; j < subs.length; j++) {
+            subjects += subs[j] + ", ";
+          }
+          tutorCont.children().find('#subjects').html(subjects.substr(0, subjects.length-2));
+        }
+
+        if(i % 2 == 0 && i != 0) {
+          tutorHTML += "</div><div class='row bottom30'><div class='col-md-6'>" + tutorCont.html() + "</div>";
+        } else {
+          tutorHTML += "<div class='col-md-6'>" + tutorCont.html() + "</div>";
+        }
+      }
+      $('#tutorList').append(tutorHTML);
+    });
+  });
+});
+</script>

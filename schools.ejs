@@ -1,0 +1,110 @@
+<%- partial('headers/header') %>
+<div class="schoolpage-info">
+  <div class="wrapper bottom60">
+    <div class="row txtcenter" style="color:white; height:200px;">
+      <h1>Drive student retention at your Institution</h1>
+      <h3>Tutorcast brings your institution online, making it more accessible and effective for your students</h3>
+      <a href="#contact" class="top30 btn btn-success btn-lg">Contact us for a Free Demo</a>
+    </div>
+  </div>
+</div>
+<div class="wrapper schoolpage" style="padding:50px;">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <img alt="picture of calculus equation" src="/images/calculus.jpg" style="width:100%; box-shadow: 3px 3px 5px #ddd;">
+      </div>
+      <div class="col-sm-6">
+        <div class="col-md-12" style="background-color:white; padding:25px;">
+          <h2 style="margin-top:10px;">Your institution's own tutoring platform</h2>
+          <h3>Innovative features such as collaborative whiteboard, video chat and lesson tools make for easy and effective online tutoring and mentoring.</h3>
+          <h3>Lesson recording and clips provide students a study tool to internalize material at their own pace.</h3>
+          <h3>Use your own tutors or Tutorcast's to help your students succeed.</h3>
+          <a href="#contact" class="btn btn-warning pull-right top30">Request a Demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="schoolpage" style="background-color:white; padding:50px;">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <img alt="picture of one of our tutors" src="/images/kate.png" style="width:100%;">
+      </div>
+      <div class="col-sm-6">
+        <div class="col-md-12" style="background-color:white; padding:25px;">
+          <h2 style="margin-top:10px;">Micro Lessons</h2>
+          <h3>Build an online lesson library featuring the brightest minds of your institution.</h3>
+          <h3>Post video clips, making relevant topics accessible to as many students as possible.</h3>
+          <h3>Allow your tutors to optimize their time with students.</h3>
+          <a href="https://tutorcast.tv/classroom/replay/481/tutor=53" class="btn btn-success top30">See a Micro Lesson</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="schoolpage" style="padding:50px;">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <img alt="picture of a graph to demonstrate analytics" src="/images/analytics.png" style="width:100%;">
+      </div>
+      <div class="col-sm-6">
+        <div class="col-md-12" style="background-color:white; padding:25px;">
+          <h2 style="margin-top:10px;">Analytics</h2>
+          <h3>Powerful and predictive analytics give you rich insight into the performance of your tutors and students.</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="schoolpage" style="background:#fff; padding:100px;">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <h2 class="bottom30">Contact Us Today for a Free Consultation and Demo</h2>
+        <form id="contact">
+          <div class="form-group">
+            <input type="text" class="form-control" id="name" placeholder="Name">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="email" placeholder="Email">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="school" placeholder="School">
+          </div>
+          <div class="form-group">
+            <textarea class="form-control" id="message" placeholder="Comments, questions, concerns..."></textarea>
+          </div>
+          <button class="btn btn-info pull-right" id="submitFormBtn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- partial('headers/footer') %>
+<script>
+$('#submitFormBtn').click(function() {
+$.ajax({
+  url: '/schools/getinfo',
+  data: {
+    name: $('#name').val(),
+    school: $('#school').val(),
+    email: $('#email').val(),
+    message: $('#message').val()
+  }
+}).done(function(data) {
+  $('#name').val("");
+  $('#school').val("");
+  $('#email').val("");
+  $('#message').val("");
+
+  swal({
+    title: 'Good job!',
+    text: 'Your message was sent!',
+    type: 'success'
+  });
+});
+});
+</script>

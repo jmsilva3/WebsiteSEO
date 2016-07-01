@@ -1,0 +1,40 @@
+<% if(req.session.User!='' && req.session.User!=null){ %>
+  <% if(req.session.student == true) { %>
+    <%- partial('headers/student_header_lg') %>
+  <% } else { %>
+    <%- partial('headers/header_lg') %>
+  <% } %>
+  <div class="dashboard">
+    <div class="col-md-10 col-md-offset-1">
+<% } else { %>
+  <%- partial('headers/header') %>
+  <div class="wrapper">
+<% } %>
+  <% var i = 0; %>
+    <div class="row">
+      <div class="col-md-12">
+        <h3 class="bottom30">Agencies</h3>
+        <div class="row bottom30">
+        <% _.each(schools, function(school) { %>
+          <%- (i%2==0&&i!=0) ? "</div><div class='row bottom30'>" : "" %>
+          <div class="col-md-6">
+            <div class="media">
+              <div class="media-left">
+                <a href="/<%= school.shortCode %>">
+                  <div style="background: url('<%= (school.image!=null)?'https://s3.amazonaws.com/com.profilepics.tutorcast/' + school.image : '/images/profile.png' %>') no-repeat;
+                    width:100px; height:100px; background-size: cover; background-position: center;" class="img-circle"></div>
+                </a>
+              </div>
+              <div class="media-body">
+                <a href="/<%= school.shortCode %>"><h4 class="media-heading"><%= school.name %></h4></a>
+                <div><%- (school.description && school.description!="null")?(school.description.length > 30) ? school.description.substr(0,30)+"..." : school.description :"" %></div>
+                <div><%- ((school.city) ? school.city + ", " : "") + ((school.state) ? school.state : "") %></div>
+              </div>
+            </div>
+          </div>
+        <% i++; }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
